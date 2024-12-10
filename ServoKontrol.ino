@@ -14,7 +14,7 @@ void loop() {
   int mevcutKonum=motorSicaklik.read();
   if(sicaklikDegeri>mevcutKonum){
     for(int i=mevcutKonum; i<=sicaklikDegeri;i++ ){
-      motorSicaklik.write(sicaklikDegeri);
+      motorSicaklik.write(i);
       delay(20);
       Serial.println(i);
     }
