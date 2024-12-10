@@ -19,5 +19,12 @@ void loop() {
       Serial.println(i);
     }
   }
+    if(sicaklikDegeri<=mevcutKonum){
+    for(int i=mevcutKonum; i>=sicaklikDegeri;i-- ){
+      motorSicaklik.write(i);
+      delay(20);
+      Serial.println(i);
+    }
+  }
  }
 }
