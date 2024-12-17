@@ -1,34 +1,54 @@
 #include <Servo.h>
 #include <DHT.h>
+
 #define DHTPIN 2         // DHT11 sensörünün bağlı olduğu pin
 #define DHTTYPE DHT11    // DHT11 sensörü kullanılıyor
+
 DHT dht(DHTPIN, DHTTYPE);  // DHT nesnesi oluşturuluyor
-Servo motor1;
+
+Servo motor_sicakik;  // Sıcaklık için servo motor
+Servo motor_nem;      // Nem için servo motor
+
 void setup() {
-  motor1.attach(3);      // Servo motorun bağlı olduğu pin
-  dht.begin();           // DHT11 sensörünü başlat
-  Serial.begin(9600);    // Seri haberleşmeyi başlat (debugging için)
+  motor_sicakik.attach(3);   // Servo motorun bağlı olduğu pin (sıcaklık için)
+  motor_nem.attach(4);       // Servo motorun bağlı olduğu pin (nem için)
+  
+  dht.begin();               // DHT11 sensörünü başlat
+  Serial.begin(9600);        // Seri haberleşmeyi başlat (debugging için)
 }
+
 void loop() {
   // Sıcaklık verisini DHT11 sensöründen al
   float sicaklik = dht.readTemperature(); // Sıcaklık °C cinsinden
-  // Sıcaklık okuma başarısız olduysa tekrar dene
-  if (isnan(sicaklik)) {
+  // Nem verisini DHT11 sensöründen al
+  float nem = dht.readHumidity();  // Nem değeri
+
+  // Sıcaklık ve nem okuma başarısız olduysa tekrar dene
+  if (isnan(sicaklik) || isnan(nem)) {
     Serial.println("DHT11 okuma hatası!");
     return;
   }
 
   // Sıcaklık değerini servo motor açısına dönüştür
-  int motorAcisi = map(sicaklik, -30, 50, 0, 180);  // -30°C ile 50°C arasındaki sıcaklık değerini 0° ile 180° arasına dönüştür
+  int motorAcisi_sicaklik = map(sicaklik, 10, 40, 0, 180);  // 10°C ile 40°C arasındaki sıcaklık değerini 0° ile 180° arasına dönüştür
 
-  // Motoru belirtilen açıya döndür
-  motor1.write(motorAcisi);
+  // Nem değerini servo motor açısına dönüştür
+  int motorAcisi_nem = map(nem, 0, 100, 0, 180);  // Nem değeri %0 ile %100 arasında ve 0° ile 180° arasına dönüştür
 
-  // Sıcaklık değerini ve motor açısını seri monitöre yazdır
+  // Motorları belirtilen açıya döndür
+  motor_sicakik.write(motorAcisi_sicaklik);
+  motor_nem.write(motorAcisi_nem);
+
+  // Sıcaklık ve nem değerlerini ve motor açılarını seri monitöre yazdır
   Serial.print("Sicaklik: ");
   Serial.print(sicaklik);
-  Serial.print(" °C, Motor Acisi: ");
-  Serial.println(motorAcisi);
+  Serial.print(" °C, Motor Acisi (Sicaklik): ");
+  Serial.println(motorAcisi_sicaklik);
+
+  Serial.print("Nem: ");
+  Serial.print(nem);
+  Serial.print(" %, Motor Acisi (Nem): ");
+  Serial.println(motorAcisi_nem);
 
   delay(2000);  // 2 saniye bekle
 }
