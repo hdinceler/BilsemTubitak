@@ -17,6 +17,8 @@ Servo motor_nem;      // Nem için servo motor
 
 void setup() {
   pinMode(parlaklikPin , INPUT);
+  pinMode(gazPin , INPUT  );
+
   motor_sicakik.attach(3);   // Servo motorun bağlı olduğu pin (sıcaklık için)
   motor_nem.attach(4);       // Servo motorun bağlı olduğu pin (nem için)
   
@@ -26,7 +28,7 @@ void setup() {
 
 void loop() {
   parlaklik= analogRead(parlaklikPin);
-
+  gazSeviyesi=analogRead(gazPin);
   // Sıcaklık verisini DHT11 sensöründen al
   float sicaklik = dht.readTemperature(); // Sıcaklık °C cinsinden
   // Nem verisini DHT11 sensöründen al
@@ -49,6 +51,10 @@ void loop() {
   motor_nem.write(motorAcisi_nem);
 
   // Sıcaklık ve nem değerlerini ve motor açılarını seri monitöre yazdır
+  Serial.print("Gaz:");
+  Serial.print(gazSeviyesi);
+  Serial.print(",");
+  
   Serial.print("Parlaklik:");
   Serial.print(parlaklik);
   Serial.print(",");
